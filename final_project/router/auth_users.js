@@ -52,13 +52,13 @@ regd_users.post("/login", (req,res) => {
             req.session.authorization = {
                 accessToken, username
             }
-            return res.status(200).json({message:"User succesfully logged in"});
+            return res.status(200).json({message:"Login successful!"});
         } else {
-            return res.status(404).json({message: "Invalid username and/or password"});  
+            return res.status(404).json({message: "Invalid Login. Check username and password"});  
         }
 
     } else {
-        return res.status(404).json({message: "Please introduce your username and/or password"});
+        return res.status(404).json({message: "Invalid Login. Check username and password"});
     }
 });
 
@@ -85,13 +85,13 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
         if (book.reviews[username]) {
             book.reviews[username] = review
             return res.status(200).json({
-                message: "review Updated", 
+                message: `The review for the book with ISBN ${isbn} has been updated`, 
                 review: book.reviews});
         } else {
             // Add review to the book
             book.reviews[username] = review            
             return res.status(200).json({
-                message: "review added", 
+                message: `The review for the book with ISBN ${isbn} has been updated`, 
                 review: book.reviews});
         }
     } else {
