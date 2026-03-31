@@ -12,14 +12,14 @@ public_users.post("/register", (req, res) => {
 
     // Check if username and password are provided
     if (username && password) {
-        // Chheck ud username is valid
+        // Check if username is valid
         if (isValid(username)) {
             users.push({
                 username: username,
                 password: password,
             })
 
-            return res.status(200).json({message: "User successfully registered. Now you can login"});
+            return res.status(200).json({message: "User successfully registered. Now you can login."});
 
         } else {
             return res.status(404).json({message: "User already exists!"});
@@ -29,17 +29,11 @@ public_users.post("/register", (req, res) => {
 }
 });
 
-const axios = require('axios');
 
 // Get the book list available in the shop
-public_users.get('/', async function (req, res) {
-    try {
-        const response = await axios.get('http://localhost:5000/');
-        return res.status(200).json(response.data);
-    } catch (error) {
-        console.log(`Error: ${error}`)
-        return res.status(500).json({message: "error while getting books"});
-    }
+public_users.get('/', function (req, res) {
+    // return the books object directly so the axios calls don't loop
+    return res.status(200).json(books);
 });
 
 
@@ -49,6 +43,7 @@ public_users.get('/isbn/:isbn', async function (req, res) {
     const isbn = req.params.isbn;
 
     try {
+        // use axios to get all books from the shop and find the one with the isbn
         const response = await axios.get('http://localhost:5000/');
         const book = response.data[isbn];
         if (!book) {
@@ -71,11 +66,15 @@ public_users.get('/author/:author', async function (req, res) {
     let authorCheck = author.toUpperCase();
 
     try {
+        // use axios to fetch the books list then do the filtering logic
         const response = await axios.get('http://localhost:5000/');
         const booksData = response.data;
+        
         // Get books keys
         const booksIsbn = await Object.keys(booksData);
+        
         // Iterate over the books with the key to get the books keys of that author
+        // compare the author name after changing it to uppercase for the match
         const authorBooksIsbn = booksIsbn.filter(isbn => booksData[isbn].author.toUpperCase() === authorCheck);
 
         // Get the author books
@@ -100,12 +99,15 @@ public_users.get('/title/:title', async function (req, res) {
     const title = req.params.title;
     let titleCheck = title.toUpperCase();
     try {
+        // Call the local api with axios to get books then filter by title
         const response = await axios.get('http://localhost:5000/');
         const booksData = response.data;
+
         // Get books keys
         const booksIsbn = await Object.keys(booksData)
         
         // Iterate over the books with the key to get the books keys of that author
+        // check the title against the titleCheck variable
         const titleBooksIsbn = booksIsbn.filter(isbn => booksData[isbn].title.toUpperCase() === titleCheck);
 
         // Get the author books
@@ -128,7 +130,7 @@ public_users.get('/title/:title', async function (req, res) {
 public_users.get('/review/:isbn',function (req, res) {
 
     const isbn = req.params.isbn;
-
+    // Check if book exists
      if (!books[isbn]) {
         return res.status(404).json({message: `Book with isbn ${isbn} not found`});
     } else {
