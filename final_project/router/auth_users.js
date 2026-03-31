@@ -70,7 +70,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     const isbn = req.params.isbn;
     
     // Get review data
-    const review = req.query.review;
+    const review = req.body.review;
     
     // Get username
     const username = req.session.authorization["username"]
