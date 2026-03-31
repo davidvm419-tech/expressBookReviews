@@ -120,11 +120,17 @@ public_users.get('/review/:isbn',function (req, res) {
 
     const isbn = req.params.isbn;
 
-    if (!books[isbn]) {
-        return res.status(404).json({message: `Book with isbn ${isbn} not found`})
+     if (!books[isbn]) {
+        return res.status(404).json({message: `Book with isbn ${isbn} not found`});
     } else {
         const bookReviews = books[isbn].reviews;
-        return res.status(200).json(bookReviews)
+        
+        // Check if the reviews object is empty
+        if (Object.keys(bookReviews).length === 0) {
+            return res.status(404).json({message: "No reviews found for this book."});
+        } else {
+            return res.status(200).json(bookReviews);
+        }
     }
 });
 
